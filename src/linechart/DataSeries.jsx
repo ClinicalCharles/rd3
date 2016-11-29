@@ -1,9 +1,10 @@
 'use strict';
 
-const React = require('react');
-const d3 = require('d3');
-const VoronoiCircleContainer = require('./VoronoiCircleContainer');
-const Line = require('./Line');
+var React = require('react');
+var d3 = require('d3');
+var VoronoiCircleContainer = require('./VoronoiCircleContainer');
+var Line = require('./Line');
+var Banding = require('./Banding');
 
 module.exports = React.createClass({
 
@@ -17,89 +18,109 @@ module.exports = React.createClass({
     xAccessor: React.PropTypes.func,
     yAccessor: React.PropTypes.func,
     hoverAnimation: React.PropTypes.bool,
+    defaultLineStrokeWidth: React.PropTypes.number
   },
 
-  getDefaultProps() {
+  getDefaultProps: function getDefaultProps() {
     return {
       data: [],
-      xAccessor: (d) => d.x,
-      yAccessor: (d) => d.y,
+      xAccessor: function xAccessor(d) {
+        return d.x;
+      },
+      yAccessor: function yAccessor(d) {
+        return d.y;
+      },
       interpolationType: 'linear',
-      hoverAnimation: false,
+      hoverAnimation: false
     };
   },
-
-  _isDate(d, accessor) {
+  _isDate: function _isDate(d, accessor) {
     return Object.prototype.toString.call(accessor(d)) === '[object Date]';
   },
+  render: function render() {
+    var props = this.props;
+    var xScale = props.xScale;
+    var yScale = props.yScale;
+    var xAccessor = props.xAccessor;
+    var yAccessor = props.yAccessor;
 
-  render() {
-    const props = this.props;
-    const xScale = props.xScale;
-    const yScale = props.yScale;
-    const xAccessor = props.xAccessor;
-    const yAccessor = props.yAccessor;
-
-    const interpolatePath = d3.svg.line()
-        .y((d) => props.yScale(yAccessor(d)))
-        .interpolate(props.interpolationType);
+    var interpolatePath = d3.svg.line().y(function (d) {
+      return props.yScale(yAccessor(d));
+    }).interpolate(props.interpolationType);
 
     if (this._isDate(props.data[0].values[0], xAccessor)) {
-      interpolatePath.x(d => props.xScale(props.xAccessor(d).getTime()));
+      interpolatePath.x(function (d) {
+        return props.xScale(props.xAccessor(d).getTime());
+      });
     } else {
-      interpolatePath.x(d => props.xScale(props.xAccessor(d)));
+      interpolatePath.x(function (d) {
+        return props.xScale(props.xAccessor(d));
+      });
     }
 
-    const lines = props.data.map((series, idx) => (
-        <Line
-          path={interpolatePath(series.values)}
-          stroke={props.colors(props.colorAccessor(series, idx))}
-          strokeWidth={series.strokeWidth}
-          strokeDashArray={series.strokeDashArray}
-          seriesName={series.name}
-          key={idx}
-        />
-      )
-    );
+    var lines = props.data.map(function (series, idx) {
+      return React.createElement(Line, {
+        path: interpolatePath(series.values),
+        stroke: props.colors(props.colorAccessor(series, idx)),
+        strokeWidth: series.strokeWidth,
+        strokeDashArray: series.strokeDashArray,
+        seriesName: series.name,
+        key: idx,
+        defaultLineStrokeWidth: props.defaultLineStrokeWidth
+      });
+    });
 
-    const voronoi = d3.geom.voronoi()
-      .x(d => xScale(d.coord.x))
-      .y(d => yScale(d.coord.y))
-      .clipExtent([[0, 0], [props.width, props.height]]);
+    var voronoi = d3.geom.voronoi().x(function (d) {
+      return xScale(d.coord.x);
+    }).y(function (d) {
+      return yScale(d.coord.y);
+    }).clipExtent([[0, 0], [props.width, props.height]]);
 
-    let cx;
-    let cy;
-    let circleFill;
-    const regions = voronoi(props.value).map((vnode, idx) => {
-      const point = vnode.point.coord;
+    var cx = void 0;
+    var cy = void 0;
+    var circleFill = void 0;
+    var regions = voronoi(props.value).map(function (vnode, idx) {
+      var point = vnode.point.coord;
       cx = props.xScale(point.x);
       cy = props.yScale(point.y);
 
       circleFill = props.colors(props.colorAccessor(vnode, vnode.point.seriesIndex));
 
-      return (
-        <VoronoiCircleContainer
-          key={idx}
-          circleFill={circleFill}
-          vnode={vnode}
-          hoverAnimation={props.hoverAnimation}
-          cx={cx} cy={cy}
-          circleRadius={props.circleRadius}
-          onMouseOver={props.onMouseOver}
-          dataPoint={{
-            xValue: point.x,
-            yValue: point.y,
-            seriesName: vnode.point.series.name,
-          }}
-        />
-      );
+      return React.createElement(VoronoiCircleContainer, {
+        key: idx,
+        circleFill: circleFill,
+        vnode: vnode,
+        hoverAnimation: props.hoverAnimation,
+        cx: cx, cy: cy,
+        circleRadius: props.circleRadius,
+        onMouseOver: props.onMouseOver,
+        dataPoint: {
+          xValue: point.x,
+          yValue: point.y,
+          seriesName: vnode.point.series.name
+        }
+      });
     });
 
-    return (
-      <g>
-        <g>{regions}</g>
-        <g>{lines}</g>
-      </g>
+
+    return React.createElement(
+      'g',
+      null,
+      React.createElement(Banding, {
+        bands: props.bands,
+        height: props.height,
+        width: props.width
+      }),
+      React.createElement(
+        'g',
+        null,
+        regions
+      ),
+      React.createElement(
+        'g',
+        null,
+        lines
+      )
     );
-  },
+  }
 });

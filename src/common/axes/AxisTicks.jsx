@@ -1,6 +1,8 @@
 'use strict';
 
-const React = require('react');
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
 
 module.exports = React.createClass({
 
@@ -29,8 +31,9 @@ module.exports = React.createClass({
     gridVerticalStrokeWidth: React.PropTypes.number,
     gridHorizontalStrokeDash: React.PropTypes.string,
     gridVerticalStrokeDash: React.PropTypes.string,
+    tickStrokeWidth: React.PropTypes.number
   },
-  getDefaultProps() {
+  getDefaultProps: function getDefaultProps() {
     return {
       innerTickSize: 6,
       outerTickSize: 6,
@@ -45,36 +48,35 @@ module.exports = React.createClass({
       gridHorizontalStrokeWidth: 1,
       gridVerticalStrokeWidth: 1,
       gridHorizontalStrokeDash: '5, 5',
-      gridVerticalStrokeDash: '5, 5',
+      gridVerticalStrokeDash: '5, 5'
     };
   },
+  render: function render() {
+    var props = this.props;
 
-  render() {
-    const props = this.props;
+    var tr = void 0;
+    var textAnchor = void 0;
+    var textTransform = void 0;
+    var tickFormat = void 0;
+    var y1 = void 0;
+    var y2 = void 0;
+    var dy = void 0;
+    var x1 = void 0;
+    var x2 = void 0;
 
-    let tr;
-    let textAnchor;
-    let textTransform;
-    let tickFormat;
-    let y1;
-    let y2;
-    let dy;
-    let x1;
-    let x2;
+    var gridStrokeWidth = void 0;
+    var gridStroke = void 0;
+    var gridStrokeDashArray = void 0;
+    var x2grid = void 0;
+    var y2grid = void 0;
+    var gridOn = false;
 
-    let gridStrokeWidth;
-    let gridStroke;
-    let gridStrokeDashArray;
-    let x2grid;
-    let y2grid;
-    let gridOn = false;
+    var sign = props.orient === 'top' || props.orient === 'right' ? -1 : 1;
+    var tickSpacing = Math.max(props.innerTickSize, 0) + props.tickPadding;
 
-    const sign = props.orient === 'top' || props.orient === 'right' ? -1 : 1;
-    const tickSpacing = Math.max(props.innerTickSize, 0) + props.tickPadding;
+    var scale = props.scale;
 
-    const scale = props.scale;
-
-    let ticks;
+    var ticks = void 0;
     if (props.tickValues) {
       ticks = props.tickValues;
     } else if (scale.ticks) {
@@ -88,18 +90,23 @@ module.exports = React.createClass({
     } else if (scale.tickFormat) {
       tickFormat = scale.tickFormat.apply(scale, props.tickArguments);
     } else {
-      tickFormat = (d) => d;
+      tickFormat = function tickFormat(d) {
+        return d;
+      };
     }
 
-    const adjustedScale = scale.rangeBand ? d => scale(d) + scale.rangeBand() / 2 : scale;
-
+    var adjustedScale = scale.rangeBand ? function (d) {
+      return scale(d) + scale.rangeBand() / 2;
+    } : scale;
 
     // Still working on this
     // Ticks and lines are not fully aligned
     // in some orientations
     switch (props.orient) {
       case 'top':
-        tr = (tick) => `translate(${adjustedScale(tick)},0)`;
+        tr = function tr(tick) {
+          return 'translate(' + adjustedScale(tick) + ',0)';
+        };
         textAnchor = 'middle';
         y2 = props.innerTickSize * sign;
         y1 = tickSpacing * sign;
@@ -108,7 +115,9 @@ module.exports = React.createClass({
         y2grid = -props.height;
         break;
       case 'bottom':
-        tr = (tick) => `translate(${adjustedScale(tick)},0)`;
+        tr = function tr(tick) {
+          return 'translate(' + adjustedScale(tick) + ',0)';
+        };
         textAnchor = 'middle';
         y2 = props.innerTickSize * sign;
         y1 = tickSpacing * sign;
@@ -117,7 +126,9 @@ module.exports = React.createClass({
         y2grid = -props.height;
         break;
       case 'left':
-        tr = (tick) => `translate(0,${adjustedScale(tick)})`;
+        tr = function tr(tick) {
+          return 'translate(0,' + adjustedScale(tick) + ')';
+        };
         textAnchor = 'end';
         x2 = props.innerTickSize * -sign;
         x1 = tickSpacing * -sign;
@@ -126,7 +137,9 @@ module.exports = React.createClass({
         y2grid = 0;
         break;
       case 'right':
-        tr = (tick) => `translate(0,${adjustedScale(tick)})`;
+        tr = function tr(tick) {
+          return 'translate(0,' + adjustedScale(tick) + ')';
+        };
         textAnchor = 'start';
         x2 = props.innerTickSize * -sign;
         x1 = tickSpacing * -sign;
@@ -140,7 +153,10 @@ module.exports = React.createClass({
 
     if (props.horizontalChart) {
       textTransform = 'rotate(-90)';
-      [y1, x1] = [x1, -y1 || 0];
+      var _ref = [x1, -y1 || 0];
+      y1 = _ref[0];
+      x1 = _ref[1];
+
 
       switch (props.orient) {
         case 'top':
@@ -177,60 +193,53 @@ module.exports = React.createClass({
     }
 
     // return grid line if grid is enabled and grid line is not on at same position as other axis.
-    const gridLine = (pos) => {
-      if (gridOn
-        && !(props.orient2nd === 'left' && pos === 0)
-        && !(props.orient2nd === 'right' && pos === props.width)
-        && !((props.orient === 'left' || props.orient === 'right') && pos === props.height)
-      ) {
-        return (
-          <line style={{
+    var gridLine = function gridLine(pos) {
+      if (gridOn && !(props.orient2nd === 'left' && pos === 0) && !(props.orient2nd === 'right' && pos === props.width) && !((props.orient === 'left' || props.orient === 'right') && pos === props.height)) {
+        return React.createElement('line', { style: {
             strokeWidth: gridStrokeWidth,
             shapeRendering: 'crispEdges',
             stroke: gridStroke,
-            strokeDasharray: gridStrokeDashArray,
-          }} x2={x2grid} y2={y2grid}
-          />
-        );
+            strokeDasharray: gridStrokeDashArray
+          }, x2: x2grid, y2: y2grid
+        });
       }
       return null;
     };
 
-    const optionalTextProps = textTransform ? {
-      transform: textTransform,
+    var optionalTextProps = textTransform ? {
+      transform: textTransform
     } : {};
 
-    return (
-    <g>
-      {ticks.map((tick, idx) => (
-          <g key={idx} className="tick" transform={tr(tick)} >
-            {gridLine(adjustedScale(tick))}
-            <line
-              style={{
-                shapeRendering: 'crispEdges',
-                opacity: '1',
-                stroke: props.tickStroke,
-              }}
-              x2={x2}
-              y2={y2}
-            />
-            <text
-              strokeWidth="0.01"
-              dy={dy} x={x1} y={y1}
-              style={{ stroke: props.tickTextStroke, fill: props.tickTextStroke }}
-              textAnchor={textAnchor}
-              {...optionalTextProps}
-            >
-              {`${tickFormat(tick)}`.split('\n').map((tickLabel) => (
-                  <tspan x={x1 || 0} dy={dy}>
-                    {tickLabel}
-                  </tspan>
-              ))}
-            </text>
-          </g>
-        ))
-      }
-    </g>
+    return React.createElement(
+      'g',
+      null,
+      ticks.map(function (tick, idx) {
+        return React.createElement(
+          'g',
+          { key: idx, className: 'tick', transform: tr(tick) },
+          gridLine(adjustedScale(tick)),
+          React.createElement('line', {
+            style: {
+              shapeRendering: 'crispEdges',
+              opacity: '1',
+              stroke: props.tickStroke,
+              strokeWidth: props.tickStrokeWidth
+            },
+            x2: x2,
+            y2: y2
+          }),
+          React.createElement(
+            'text',
+            _extends({
+              strokeWidth: '0.01',
+              dy: dy, x: x1, y: y1,
+              style: { stroke: props.tickTextStroke, fill: props.tickTextStroke },
+              textAnchor: textAnchor
+            }, optionalTextProps),
+            tickFormat(tick)
+          )
+        );
+      })
     );
-  },
+  }
 });

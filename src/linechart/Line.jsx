@@ -1,6 +1,6 @@
 'use strict';
 
-const React = require('react');
+var React = require('react');
 
 module.exports = React.createClass({
 
@@ -12,28 +12,25 @@ module.exports = React.createClass({
     stroke: React.PropTypes.string,
     strokeWidth: React.PropTypes.number,
     strokeDashArray: React.PropTypes.string,
+    defaultLineStrokeWidth: React.PropTypes.number,
   },
 
-  getDefaultProps() {
+  getDefaultProps: function getDefaultProps() {
     return {
       stroke: '#3182bd',
       fill: 'none',
-      strokeWidth: 1,
-      className: 'rd3-linechart-path',
+      className: 'rd3-linechart-path'
     };
   },
-
-  render() {
-    const props = this.props;
-    return (
-      <path
-        d={props.path}
-        stroke={props.stroke}
-        strokeWidth={props.strokeWidth}
-        strokeDasharray={props.strokeDashArray}
-        fill={props.fill}
-        className={props.className}
-      />
-    );
-  },
+  render: function render() {
+    var props = this.props;
+    return React.createElement('path', {
+      d: props.path,
+      stroke: props.stroke,
+      strokeWidth: props.strokeWidth || props.defaultLineStrokeWidth || 1,
+      strokeDasharray: props.strokeDashArray,
+      fill: props.fill,
+      className: props.className
+    });
+  }
 });

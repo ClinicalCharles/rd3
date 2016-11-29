@@ -1,10 +1,12 @@
 'use strict';
 
-const React = require('react');
-const d3 = require('d3');
-const AxisTicks = require('./AxisTicks');
-const AxisLine = require('./AxisLine');
-const Label = require('./Label');
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var d3 = require('d3');
+var AxisTicks = require('./AxisTicks');
+var AxisLine = require('./AxisLine');
+var Label = require('./Label');
 
 module.exports = React.createClass({
 
@@ -30,9 +32,10 @@ module.exports = React.createClass({
     gridVerticalStroke: React.PropTypes.string,
     gridVerticalStrokeWidth: React.PropTypes.number,
     gridVerticalStrokeDash: React.PropTypes.string,
+    tickStrokeWidth: React.PropTypes.number
   },
 
-  getDefaultProps() {
+  getDefaultProps: function getDefaultProps() {
     return {
       fill: 'none',
       stroke: 'none',
@@ -43,16 +46,15 @@ module.exports = React.createClass({
       xAxisLabelOffset: 10,
       xAxisOffset: 0,
       xOrient: 'bottom',
-      yOrient: 'left',
+      yOrient: 'left'
     };
   },
+  render: function render() {
+    var props = this.props;
 
-  render() {
-    const props = this.props;
+    var t = 'translate(0 ,' + (props.xAxisOffset + props.height) + ')';
 
-    const t = `translate(0 ,${props.xAxisOffset + props.height})`;
-
-    let tickArguments;
+    var tickArguments = void 0;
     if (typeof props.xAxisTickCount !== 'undefined') {
       tickArguments = [props.xAxisTickCount];
     }
@@ -61,45 +63,45 @@ module.exports = React.createClass({
       tickArguments = [d3.time[props.xAxisTickInterval.unit], props.xAxisTickInterval.interval];
     }
 
-    return (
-      <g
-        className={props.xAxisClassName}
-        transform={t}
-      >
-        <AxisTicks
-          tickValues={props.xAxisTickValues}
-          tickFormatting={props.tickFormatting}
-          tickArguments={tickArguments}
-          tickStroke={props.tickStroke}
-          tickTextStroke={props.tickTextStroke}
-          innerTickSize={props.tickSize}
-          scale={props.xScale}
-          orient={props.xOrient}
-          orient2nd={props.yOrient}
-          height={props.height}
-          width={props.width}
-          horizontalChart={props.horizontalChart}
-          gridVertical={props.gridVertical}
-          gridVerticalStroke={props.gridVerticalStroke}
-          gridVerticalStrokeWidth={props.gridVerticalStrokeWidth}
-          gridVerticalStrokeDash={props.gridVerticalStrokeDash}
-        />
-        <AxisLine
-          scale={props.xScale}
-          stroke={props.stroke}
-          orient={props.xOrient}
-          outerTickSize={props.tickSize}
-          {...props}
-        />
-        <Label
-          horizontalChart={props.horizontalChart}
-          label={props.xAxisLabel}
-          offset={props.xAxisLabelOffset}
-          orient={props.xOrient}
-          margins={props.margins}
-          width={props.width}
-        />
-      </g>
+    return React.createElement(
+      'g',
+      {
+        className: props.xAxisClassName,
+        transform: t
+      },
+      React.createElement(AxisTicks, {
+        tickValues: props.xAxisTickValues,
+        tickFormatting: props.tickFormatting,
+        tickArguments: tickArguments,
+        tickStroke: props.tickStroke,
+        tickTextStroke: props.tickTextStroke,
+        innerTickSize: props.tickSize,
+        scale: props.xScale,
+        orient: props.xOrient,
+        orient2nd: props.yOrient,
+        height: props.height,
+        width: props.width,
+        horizontalChart: props.horizontalChart,
+        gridVertical: props.gridVertical,
+        gridVerticalStroke: props.gridVerticalStroke,
+        gridVerticalStrokeWidth: props.gridVerticalStrokeWidth,
+        gridVerticalStrokeDash: props.gridVerticalStrokeDash,
+        tickStrokeWidth: props.tickStrokeWidth
+      }),
+      React.createElement(AxisLine, _extends({
+        scale: props.xScale,
+        stroke: props.stroke,
+        orient: props.xOrient,
+        outerTickSize: props.tickSize
+      }, props)),
+      React.createElement(Label, {
+        horizontalChart: props.horizontalChart,
+        label: props.xAxisLabel,
+        offset: props.xAxisLabelOffset,
+        orient: props.xOrient,
+        margins: props.margins,
+        width: props.width
+      })
     );
-  },
+  }
 });

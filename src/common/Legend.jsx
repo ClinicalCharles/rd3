@@ -1,7 +1,7 @@
 'use strict';
 
-const React = require('react');
-const d3 = require('d3');
+var React = require('react');
+var d3 = require('d3');
 
 module.exports = React.createClass({
 
@@ -15,70 +15,72 @@ module.exports = React.createClass({
     itemClassName: React.PropTypes.string,
     margins: React.PropTypes.object,
     text: React.PropTypes.string,
-    width: React.PropTypes.number.isRequired,
+    width: React.PropTypes.number.isRequired
   },
 
-  getDefaultProps() {
+  getDefaultProps: function getDefaultProps() {
     return {
       className: 'rd3-legend',
       colors: d3.scale.category20c(),
-      colorAccessor: (d, idx) => idx,
+      colorAccessor: function colorAccessor(d, idx) {
+        return idx;
+      },
       itemClassName: 'rd3-legend-item',
-      text: '#000',
+      text: '#000'
     };
   },
+  render: function render() {
+    var props = this.props;
 
-  render() {
-    const props = this.props;
-
-    const textStyle = {
+    var textStyle = {
       color: 'black',
       fontSize: '50%',
-      verticalAlign: 'top',
+      verticalAlign: 'top'
     };
 
-    const legendItems = [];
+    var legendItems = [];
 
-    props.data.forEach((series, idx) => {
-      const itemStyle = {
+    props.data.forEach(function (series, idx) {
+      var itemStyle = {
         color: props.colors(props.colorAccessor(series, idx)),
         lineHeight: '60%',
-        fontSize: '200%',
+        fontSize: '200%'
       };
 
-      legendItems.push(
-        <li
-          key={idx}
-          className={props.itemClassName}
-          style={itemStyle}
-        >
-          <span
-            style={textStyle}
-          >
-            {series.name}
-          </span>
-        </li>
-      );
+      legendItems.push(React.createElement(
+        'li',
+        {
+          key: idx,
+          className: props.itemClassName,
+          style: itemStyle
+        },
+        React.createElement(
+          'span',
+          {
+            style: textStyle
+          },
+          series.name
+        )
+      ));
     });
 
-    const topMargin = props.margins.top;
+    var topMargin = props.margins.top;
 
-    const legendBlockStyle = {
+    var legendBlockStyle = {
       wordWrap: 'break-word',
-      width: props.width,
+      maxWidth: props.width,
       paddingLeft: '0',
       marginBottom: '0',
-      marginTop: topMargin,
-      listStylePosition: 'inside',
+      marginTop: topMargin
     };
 
-    return (
-      <ul
-        className={props.className}
-        style={legendBlockStyle}
-      >
-        {legendItems}
-      </ul>
+    return React.createElement(
+      'ul',
+      {
+        className: props.className,
+        style: legendBlockStyle
+      },
+      legendItems
     );
-  },
+  }
 });
