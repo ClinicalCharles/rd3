@@ -1,80 +1,79 @@
-## Future of rd3 
-Currently I don't have time to manage this library anymore so if someone is willing to maintain I would like to transfer this repository. Please see https://github.com/yang-wei/rd3/issues/88
-Let us discuss where will this library heading.
+This is my custom fork of the React-D3  library:
+=======
+[rd3](https://github.com/yang-wei/rd3)
+--------------------------------------
+These additions arose as a requirement while developing medical data presentations.
 
-## [rd3](https://github.com/yang-wei/rd3) (forked from [react-d3](https://github.com/esbullington/react-d3))
-Modular ReactJS charts made using d3 chart utilities.
+Tested on a line graph only. Please test your use case thoroughly.
 
-[![npm version](https://badge.fury.io/js/rd3.svg)](https://badge.fury.io/js/rd3)
+The additions, in approximate order of complexity:
 
-## Usage
+ - Background 'Banding' to display horizontal coloured segments on a Legend Chart
+ - Rendering tooltips outside of the react root node to avoid being obscured by other content (where z-index is ineffective)
+ - Replace harcoded table formatting on legend chart and inject custom classnames instead
+ - Allow injection of default line stroke width in line graph rather than on a function-by-function basis
+ -  Allow injection of  axis tick stroke width to prevent them disappearing when rendering is bad
 
-The latest version of rd3 requires **React 0.14 or later**. If you are using older React version, please refer to [here](https://github.com/yang-wei/rd3/releases/tag/v0.5.3)
 
-### npmcdn
-Thanks to [npmcdn](https://npmcdn.com/) you can now try out rd3 quickly:
+ 
+ Below is an example of the props you need to access this functionality.
+ 
 
- * https://npmcdn.com/rd3/build/public/js/react-d3.js
- * https://npmcdn.com/rd3/build/public/js/react-d3.min.js
 
-Note: rd3 depends on react and d3, you will need to include those scripts if you aren't yet.
+		    <LineChart
+ 			    		bands= {[
+								  { colour:'#77afe3', 
+									opacity: '0.35', 
+									textXPosition: '0.95', 
+									textYPosition: '0.5', 
+									textAnchor: 'end', 
+									textValue: 'Text'}
+   						  		]}
+  			    		chartContainerClassName='container'
+   						chartClassName='row flex-items-xs-center'
+   						legendClassName='row flex-items-xs-center'
+   						tickStrokeWidth={1.5}
+   						defaultLineStrokeWidth={3} >
 
- * https://npmcdn.com/react/dist/react.min.js
- * https://npmcdn.com/react-dom/dist/react-dom.min.js
- * https://npmcdn.com/d3
 
-You can refer to [fiddle example](https://yang-wei.github.io/rd3/docs/new/charts/areaChart.html) too.
+ 
+**Tooltip Rendering**
 
-### NPM
-Or via `npm`:
+ - This Requires the addition of an html node in the body, besides the default react root, with an id of tooltip. e.g.
 
-If you havn't installed `react` and `d3` then:
+		<body>
+		  <div id="app"></div>
+		  <div id="tooltip"></div>
+		  <script src="bundle.js"></script>
+		</body> 
 
-```
-npm install react react-dom
-// currently we do not support d3@v4.0
-npm install d3@v3.5.17
-```
+**Bands**
 
-```
-npm install rd3
-```
+ - Accepts an array of objects which describe each of the bands you wish to have. The bands will share the height equally amongst them.
+	 - colour(or color) defines the background colour of the band
+	 - opacity defines the opacity  of this colour
+	 - textXPosition is the percentage width that the text aligns to in the band(represented as a decimal value)
+	 - textYPostion is the percentage height that the text aligns to in the band(represented as a decimal value)
+	 - textAnchor is the way that the text renders relative to the textPosition see more [here](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor)
+	 - textValue is the text to be displayed
 
-Then, import into your ReactJS project:
+**Legend Chart Classnames**
 
-```js
-var rd3 = require('rd3');
-// es6
-import rd3 from 'rd3';
-```
+ - The classnames to be provided to the Legend Chart component which is used for at least the Line Chart when it is generated with a Legend
+  - chartContainerClassName 
+- chartClassName
+- legendClassName 
 
-The charts are then available under the `rd3` namespace, which you can then use as shown on the [documentation](https://yang-wei.github.io/rd3/):
+**tickStrokeWidth**
 
-### Available Charts
+ - The stroke width of the axis ticks for both X and Y axis
 
-```js
-const BarChart = rd3.BarChart;
-const LineChart = rd3.LineChart;
-const PieChart = rd3.PieChart;
-const AreaChart = rd3.AreaChart;
-const Treemap = rd3.Treemap;
-const ScatterChart = rd3.ScatterChart;
-const CandleStickChart = rd3.CandleStickChart;
-```
+**defaultLineStrokeWidth**
 
-For usage, please see [here](https://yang-wei.github.io/rd3).
-
-### Support
-
-* Chat: [![Join the chat at https://gitter.im/esbullington/react-d3](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/esbullington/react-d3?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-* Issues: [rd3 issues](https://github.com/yang-wei/rd3/issues) on Github
-
-### Background
-Although there have been [several](http://nicolashery.com/integrating-d3js-visualizations-in-a-react-app/) [different](http://bl.ocks.org/milroc/d22bbf92231876505e5d) approaches proposed for combining the power of d3 with the flexibility and modularity of ReactJS, the approach I'm using here was inspired by [this blog post](http://10consulting.com/2014/02/19/d3-plus-reactjs-for-charting/) by Ben Smith of [Binary Consulting](http://10consulting.com/).
-
-With this approach, React itself is responsible for generating the SVG markup.  d3.js is used for its tremendous collection of utility functions, such as those that calculate the `path` value for various chart types.
+ - The default line width for a Line Chart. If no value is given it defaults to 1. If values are given on a function-by-function basis they will override this.
 
 ### License
 MIT
 
 Copyright (c) 2014-2016 Eric. S Bullington, Lim Yang Wei, and project [contributors](https://github.com/yang-wei/rd3/graphs/contributors)
+
